@@ -34,7 +34,7 @@ export class UserController {
     // 生成随机字符串
     const randomCode = this.configService.RandomKey();
 
-    const { AppID } = this.configService.WebAppConfig();
+    const { AppID } = this.configService.getAppConfig('web');
 
     const redirectUrl = `${this.configService.Host()}/user/login/validate?redirect=${redirect}`;
     // 将randomCode存入session，防止csrf攻击，有效期300s
@@ -69,7 +69,7 @@ export class UserController {
     // 校验session，防止csrf攻击
     const session = this.cacheService.get(state);
     if (session) {
-      const { AppID, AppSecret } = this.configService.WebAppConfig();
+      const { AppID, AppSecret } = this.configService.getAppConfig('web');
       const url = `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${AppID}&secret=${AppSecret}&code=${code}&grant_type=authorization_code`;
       const wxLoginData = await this.httpService
         .get(url)

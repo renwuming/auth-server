@@ -5,7 +5,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from './config/config.module';
 import { CacheModule } from './cache/cache.module';
-import { WeappUserModule } from './weapp-user/weapp-user.module';
 
 @Global()
 @Module({
@@ -14,7 +13,6 @@ import { WeappUserModule } from './weapp-user/weapp-user.module';
     UserModule,
     ConfigModule,
     CacheModule,
-    WeappUserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
