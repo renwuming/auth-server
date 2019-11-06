@@ -1,7 +1,7 @@
 export interface User {
   name: String;
   access_token: String;
-  openid: String;
+  openid: Object;
   unionid: String;
   refresh_token: String;
   userInfo: Object;

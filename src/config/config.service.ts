@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import WebAppConfig from '../WebAppConfig';
+import WebAppConfig from '../../config/WebAppConfig';
+import JmzFybAppConfig from '../../config/JmzFybAppConfig';
 
 @Injectable()
 export class ConfigService {
   WebAppConfig() {
     return WebAppConfig;
+  }
+  getWeappConfig(weappName) {
+    return {
+      'jmz-fyb': JmzFybAppConfig,
+    }[weappName];
   }
   Host() {
     // return 'http://www.renwuming.cn/auth'; // TODO
