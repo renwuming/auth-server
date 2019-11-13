@@ -13,8 +13,8 @@ export class UserService {
 
   // 根据access_token、openid等，更新用户信息
   async updateUserData(data) {
-    const { access_token, openid, unionid } = data;
-    const user = await this.userModel.findOne({ unionid });
+    const { access_token, openid } = data;
+    const user = await this.userModel.findOne({ openid });
     const userInfo = await this.getUserInfo(access_token, openid);
     const insertData = _.merge(
       {},
@@ -27,7 +27,7 @@ export class UserService {
     if (user) {
       await this.userModel.findOneAndUpdate(
         {
-          unionid,
+          openid,
         },
         _.merge(user, insertData),
       );

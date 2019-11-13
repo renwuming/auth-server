@@ -47,8 +47,8 @@ export class UserController {
   @Post('/validate_741236987')
   async validate(@Body() body: validateTicketDto) {
     const { ticket } = body;
-    const unionid = this.cacheService.get(ticket);
-    const user = await this.userModel.findOne({ unionid });
+    const openid = this.cacheService.get(ticket);
+    const user = await this.userModel.findOne({ openid });
     if (user) {
       return user.toObject();
     } else {
@@ -75,13 +75,13 @@ export class UserController {
         .get(url)
         .toPromise()
         .then(res => res.data);
-      const { access_token, unionid } = wxLoginData;
+      const { access_token, openid } = wxLoginData;
       if (access_token) {
         // 更新用户信息
         this.userService.updateUserData(wxLoginData);
-        // 生成ticket，并将ticket与unionid关联，存入session
+        // 生成ticket，并将ticket与openid关联，存入session
         const ticket = this.configService.RandomKey();
-        this.cacheService.set(ticket, unionid);
+        this.cacheService.set(ticket, openid);
         // 存入cookie
         res.cookie('ticket', ticket);
         res.redirect(redirect);
