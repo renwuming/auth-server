@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from './config/config.module';
 import { CacheModule } from './cache/cache.module';
 import { WeappUserModule } from './weapp-user/weapp-user.module';
+import { FileModule } from './file/file.module';
 
 @Global()
 @Module({
@@ -15,6 +16,7 @@ import { WeappUserModule } from './weapp-user/weapp-user.module';
     ConfigModule,
     CacheModule,
     WeappUserModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
