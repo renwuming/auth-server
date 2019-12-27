@@ -28,18 +28,9 @@ export class WeappUserController {
   ) {}
 
   @Post('/validate_741236987')
-  async validate(@Headers() headers) {
-    const ticket = headers['x-ticket'];
-    if (ticket) {
-      const user = this.cacheService.get(ticket);
-      if (user) {
-        return this.weappUserService.getUserData(user);
-      } else {
-        throw new UnauthorizedException('登录过期');
-      }
-    } else {
-      throw new UnauthorizedException('登录过期');
-    }
+  async validate(@Body() body) {
+    const { ticket } = body;
+    return this.getDataByTicket(ticket);
   }
 
   @Post('/login')
@@ -78,6 +69,19 @@ export class WeappUserController {
     }
   }
 
+  @Post('/update-userinfo')
+  async updateUserInfo(@Body() body, @Headers() headers) {
+    const { userInfo } = body;
+    const ticket = headers['x-ticket'];
+    const userData = await this.getDataByTicket(ticket);
+    await this.userModel.findOneAndUpdate({
+      openid: userData.openid
+    }, {
+      userInfo,
+      authorized: true,
+    });
+  }
+
   // 根据openid等，更新用户信息
   async updateUserData(data, weappName) {
     const { openid } = data;
@@ -99,8 +103,22 @@ export class WeappUserController {
     const defaultAvatarUrl = 'https://www.renwuming.cn/static/jmz/icon.jpg';
     const nickID = openid.substr(-4);
     return {
-      nickname: `玩家${nickID}`,
-      headimgurl: defaultAvatarUrl,
+      nickName: `玩家${nickID}`,
+      avatarUrl: defaultAvatarUrl,
     };
+  }
+
+  // 根据ticket获取用户信息
+  async getDataByTicket(ticket) {
+    if (ticket) {
+      const user = this.cacheService.get(ticket);
+      if (user) {
+        return this.weappUserService.getUserData(user);
+      } else {
+        throw new UnauthorizedException('登录过期');
+      }
+    } else {
+      throw new UnauthorizedException('登录过期');
+    }
   }
 }
