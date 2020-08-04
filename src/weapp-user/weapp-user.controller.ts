@@ -77,7 +77,7 @@ export class WeappUserController {
     const config = this.configService.getAppConfig(weappName);
     const { AppID } = config;
     const userData = await this.getDataByTicket(ticket);
-    const fullUserData = await this.weappUserService.getFullUserData(
+    const { unionId } = await this.weappUserService.getFullUserData(
       AppID,
       userData,
       encryptedData,
@@ -90,7 +90,7 @@ export class WeappUserController {
       {
         userInfo,
         authorized: true,
-        ...fullUserData,
+        unionid: unionId,
       },
     );
   }

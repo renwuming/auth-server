@@ -10,15 +10,17 @@ export class WeappUserService {
   // 根据ticket，获取用户信息
   async getUserData(data) {
     const { openid } = data;
-    const userData = await this.userModel.findOne({
-      openid,
-    });
+    const userData = await this.userModel
+      .findOne({
+        openid,
+      })
+      .lean();
     return { ...userData, ...data };
   }
 
   // 解密用户数据，包括unionid等
-  async getFullUserData(AppID, { sessionKey }, encryptedData, iv) {
-    const pc = new WXBizDataCrypt(AppID, sessionKey);
+  async getFullUserData(AppID, { session_key }, encryptedData, iv) {
+    const pc = new WXBizDataCrypt(AppID, session_key);
     const data = pc.decryptData(encryptedData, iv);
     return data;
   }
