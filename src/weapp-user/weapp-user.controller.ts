@@ -90,9 +90,18 @@ export class WeappUserController {
       {
         userInfo,
         authorized: true,
-        unionid: unionId,
       },
     );
+    if (unionId) {
+      await this.userModel.findOneAndUpdate(
+        {
+          openid: userData.openid,
+        },
+        {
+          unionid: unionId,
+        },
+      );
+    }
   }
 
   // 根据openid等，更新用户信息
