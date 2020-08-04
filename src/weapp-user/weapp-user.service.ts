@@ -20,8 +20,12 @@ export class WeappUserService {
 
   // 解密用户数据，包括unionid等
   async getFullUserData(AppID, { session_key }, encryptedData, iv) {
-    const pc = new WXBizDataCrypt(AppID, session_key);
-    const data = pc.decryptData(encryptedData, iv);
-    return data;
+    try {
+      const pc = new WXBizDataCrypt(AppID, session_key);
+      const data = pc.decryptData(encryptedData, iv);
+      return data;
+    } catch (err) {
+      return {};
+    }
   }
 }
