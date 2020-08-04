@@ -71,15 +71,28 @@ export class WeappUserController {
 
   @Post('/update-userinfo')
   async updateUserInfo(@Body() body, @Headers() headers) {
-    const { userInfo } = body;
+    const { userInfo, encryptedData, iv } = body;
     const ticket = headers['x-ticket'];
+    const weappName = headers['x-weappname'];
+    const config = this.configService.getAppConfig(weappName);
+    const { AppID } = config;
     const userData = await this.getDataByTicket(ticket);
-    await this.userModel.findOneAndUpdate({
-      openid: userData.openid
-    }, {
-      userInfo,
-      authorized: true,
-    });
+    const fullUserData = await this.weappUserService.getFullUserData(
+      AppID,
+      userData,
+      encryptedData,
+      iv,
+    );
+    await this.userModel.findOneAndUpdate(
+      {
+        openid: userData.openid,
+      },
+      {
+        userInfo,
+        authorized: true,
+        ...fullUserData,
+      },
+    );
   }
 
   // 根据openid等，更新用户信息

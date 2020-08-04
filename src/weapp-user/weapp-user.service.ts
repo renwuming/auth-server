@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../schemas/user.interface';
+import WXBizDataCrypt from './WXBizDataCrypt';
 
 @Injectable()
 export class WeappUserService {
@@ -12,6 +13,13 @@ export class WeappUserService {
     const userData = await this.userModel.findOne({
       openid,
     });
-    return userData;
+    return { ...userData, ...data };
+  }
+
+  // 解密用户数据，包括unionid等
+  async getFullUserData(AppID, { sessionKey }, encryptedData, iv) {
+    const pc = new WXBizDataCrypt(AppID, sessionKey);
+    const data = pc.decryptData(encryptedData, iv);
+    return data;
   }
 }
