@@ -17,6 +17,7 @@ import { getLoginUrlDto } from './dto/getLoginUrl.dto';
 import { validateCodeDto } from './dto/validateCode.dto';
 import { UserService } from './user.service';
 import { validateTicketDto } from './dto/validateTicket.dto';
+import { userDataDto } from './dto/userData.dto';
 
 @Controller('user')
 export class UserController {
@@ -48,9 +49,10 @@ export class UserController {
   async validate(@Body() body: validateTicketDto) {
     const { ticket } = body;
     const openid = this.cacheService.get(ticket);
-    const user = await this.userModel.findOne({ openid });
+    const user = await this.userModel.findOne({ openid }).lean();
+    user.userInfo = this.userService.userInfoPolyfill(user.userInfo);
     if (user) {
-      return user.toObject();
+      return user;
     } else {
       throw new UnprocessableEntityException('登录过期');
     }
@@ -91,5 +93,21 @@ export class UserController {
     } else {
       throw new UnprocessableEntityException('state失效，请重新登录');
     }
+  }
+
+  @Get('/data/list')
+  async userDataList(@Body() queryList: userDataDto[]) {
+    const resList = [];
+    for (let i = 0; i < queryList.length; i++) {
+      const query = queryList[i];
+      const { userInfo } = await this.userModel.findOne(query).lean();
+      resList.push(this.userService.userInfoPolyfill(userInfo));
+    }
+    return resList;
+  }
+  @Get('/data')
+  async userData(@Body() query: userDataDto) {
+    const { userInfo } = await this.userModel.findOne(query).lean();
+    return this.userService.userInfoPolyfill(userInfo);
   }
 }

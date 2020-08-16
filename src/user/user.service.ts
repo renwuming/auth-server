@@ -47,4 +47,12 @@ export class UserService {
     delete data.unionid;
     return data;
   }
+
+  userInfoPolyfill(data) {
+    const { nickname, headimgurl, sex } = data;
+    if (nickname) data.nickName = nickname;
+    if (headimgurl) data.avatarUrl = headimgurl;
+    if (sex) data.gender = sex;
+    return data;
+  }
 }
