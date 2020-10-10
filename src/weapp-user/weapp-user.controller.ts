@@ -57,9 +57,10 @@ export class WeappUserController {
       if (!result.errcode) {
         const ticket = WXBizDataCrypt.randomKey();
         this.cacheService.set(ticket, result);
-        this.updateUserData(result, weappName);
+        const data = await this.updateUserData(result, weappName);
         return {
           ticket,
+          data,
         };
       } else {
         throw new UnprocessableEntityException('登录失败');
@@ -107,17 +108,18 @@ export class WeappUserController {
   // 根据openid等，更新用户信息
   async updateUserData(data, weappName) {
     const { openid } = data;
-    const user = await this.userModel.findOne({
+    let user = await this.userModel.findOne({
       openid,
     });
     if (!user) {
-      const newUser = new this.userModel({
+      user = new this.userModel({
         openid,
         type: weappName,
         userInfo: this.createDefaultUserInfo(openid),
       });
-      await newUser.save();
+      await user.save();
     }
+    return user;
   }
 
   // 生成默认userInfo
